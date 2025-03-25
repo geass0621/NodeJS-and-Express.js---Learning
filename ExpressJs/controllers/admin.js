@@ -85,14 +85,14 @@ exports.postAddProduct = (req, res, next) => {
 
 // };
 
-// exports.getAdminProducts = (req, res, next) => {
-//   req.user.getProducts()
-//     .then(products => {
-//       res.render('admin/products', {
-//         prods: products,
-//         pageTitle: 'Admin Products',
-//         path: '/admin/products',
-//       });
-//     })
-//     .catch(err => console.log(err));
-// };
+exports.getAdminProducts = (req, res, next) => {
+  Product.fetchAll()
+    .then(products => {
+      res.render('admin/products', {
+        prods: products,
+        pageTitle: 'Admin Products',
+        path: '/admin/products',
+      });
+    })
+    .catch(err => console.log(err));
+};
