@@ -34,14 +34,6 @@ app.use(session({
   store: store
 }));
 
-app.use((req, res, next) => {
-  User.findById('67e56bdc22db2a938a01c491')
-    .then(user => {
-      req.user = user
-      next();
-    })
-    .catch(err => console.log(err));
-})
 
 app.use('/admin', adminRoutes);
 
@@ -52,20 +44,19 @@ app.use(errorController.get404);
 
 mongoose.connect('mongodb+srv://dongcuong0621:NdLTGXBI5TpinOVK@cluster0.qhvix.mongodb.net/Shop?retryWrites=true&w=majority&appName=Cluster0')
   .then(() => {
-    User.findOne()
-      .then(user => {
-        if (!user) {
-          const user = new User({
-            name: 'Mike',
-            email: 'mike@abv.com',
-            cart: {
-              items: []
-            }
-          })
-          user.save()
-        }
-      })
-
+    // User.findOne()
+    //   .then(user => {
+    //     if (!user) {
+    //       const user = new User({
+    //         name: 'Mike',
+    //         email: 'mike@abv.com',
+    //         cart: {
+    //           items: []
+    //         }
+    //       })
+    //       user.save()
+    //     }
+    //   })
     app.listen(3000);
     console.log('Connected');
   })
