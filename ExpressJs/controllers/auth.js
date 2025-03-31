@@ -2,22 +2,45 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 
 exports.getLogin = (req, res, next) => {
+  let message = req.flash('error');
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
   res.render('auth/login', {
     path: '/login',
     pageTitle: 'Login',
-    isAuthenticated: req.session.isLoggedIn
+    isAuthenticated: req.session.isLoggedIn,
+    errorMessage: message
   });
 };
 
 exports.postLogin = (req, res, next) => {
-  User.findById('67e56bdc22db2a938a01c491')
+  const email = req.body.email;
+  const password = req.body.password;
+  User.findOne({ email: email })
     .then(user => {
-      req.session.isLoggedIn = true;
-      req.session.user = user;
-      req.session.save(err => {
-        console.log(err);
-        res.redirect('/');
-      })
+      if (!user) {
+        req.flash('error', 'Invalid email or password.');
+        res.redirect('/login');
+      }
+      bcrypt.compare(password, user.password)
+        .then(doMatch => {
+          if (doMatch) {
+            req.session.isLoggedIn = true;
+            req.session.user = user;
+            return req.session.save(err => {
+              console.log(err);
+              res.redirect('/');
+            })
+          }
+          req.flash('error', 'Invalid email or password.');
+          res.redirect('/login')
+        })
+        .catch(err => {
+          console.log(err);
+        });
     })
     .catch(err => console.log(err));
 };
@@ -30,10 +53,17 @@ exports.postLogout = (req, res, next) => {
 };
 
 exports.getSignup = (req, res, next) => {
+  let message = req.flash('error');
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
   res.render('auth/signup', {
     path: '/signup',
     pageTitle: 'Signup',
-    isAuthenticated: false
+    isAuthenticated: false,
+    errorMessage: message
   })
 };
 
@@ -45,6 +75,7 @@ exports.postSignup = (req, res, next) => {
   User.findOne({ email: email })
     .then(userDoc => {
       if (userDoc) {
+        req.flash('error', 'email already exist.');
         return res.redirect('/signup');
       }
       return bcrypt.hash(password, 12)
@@ -53,7 +84,7 @@ exports.postSignup = (req, res, next) => {
             email: email,
             password: hashPass,
             cart: { items: [] }
-          })
+          });
           user.save();
         })
     })
