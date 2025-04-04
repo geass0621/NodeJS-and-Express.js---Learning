@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const { validationResult } = require('express-validator');
 
 
 exports.getAddProduct = (req, res, next) => {
@@ -6,6 +7,8 @@ exports.getAddProduct = (req, res, next) => {
     pageTitle: "Add Products",
     path: "/admin/add-product",
     editing: false,
+    hasError: false,
+    errorMessage: null
   });
 
 };
@@ -15,6 +18,24 @@ exports.postAddProduct = (req, res, next) => {
   const price = req.body.price;
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    return res.status(422).render('admin/edit-product', {
+      pageTitle: "Add Products",
+      path: "/admin/add-product",
+      editing: false,
+      hasError: true,
+      errorMessage: errors.array()[0].msg,
+      product: {
+        title: title,
+        price: price,
+        imageUrl: imageUrl,
+        description: description
+      }
+    })
+  }
   const product = new Product({
     title: title,
     price: price,
@@ -46,6 +67,8 @@ exports.getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         editing: editMode,
         product: product,
+        hasError: false,
+        errorMessage: null
       });
     })
     .catch(err => console.log(err));
@@ -57,6 +80,25 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDescription = req.body.description;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    return res.status(422).render('admin/edit-product', {
+      pageTitle: "Edit Products",
+      path: "/admin/add-product",
+      editing: true,
+      hasError: true,
+      errorMessage: errors.array()[0].msg,
+      product: {
+        title: updatedTitle,
+        price: updatedPrice,
+        imageUrl: updatedImageUrl,
+        description: updatedDescription,
+        _id: prodId
+      }
+    })
+  }
 
   Product.findById(prodId)
     .then(product => {
@@ -96,6 +138,8 @@ exports.getAdminProducts = (req, res, next) => {
         prods: products,
         pageTitle: 'Admin Products',
         path: '/admin/products',
+        hasError: false,
+        errorMessage: null
       });
     })
     .catch(err => console.log(err));
