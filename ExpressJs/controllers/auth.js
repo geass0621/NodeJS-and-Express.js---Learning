@@ -2,6 +2,7 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const { validationResult } = require('express-validator');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -80,23 +81,24 @@ exports.getSignup = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/signup', {
+      path: '/signup',
+      pageTitle: 'Signup',
+      isAuthenticated: false,
+      errorMessage: errors.array()[0].msg
+    });
+  }
 
-  User.findOne({ email: email })
-    .then(userDoc => {
-      if (userDoc) {
-        req.flash('error', 'email already exist.');
-        return res.redirect('/signup');
-      }
-      return bcrypt.hash(password, 12)
-        .then(hashPass => {
-          const user = new User({
-            email: email,
-            password: hashPass,
-            cart: { items: [] }
-          });
-          user.save();
-        })
+  bcrypt.hash(password, 12)
+    .then(hashPass => {
+      const user = new User({
+        email: email,
+        password: hashPass,
+        cart: { items: [] }
+      });
+      user.save();
     })
     .then(result => {
       res.redirect('/login');
