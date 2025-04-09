@@ -21,8 +21,10 @@ router.get('/products/:productId', shopController.getProduct);
 
 router.get('/orders/:orderId', isAuth, shopController.getInvoice);
 
-router.post('/create-order', isAuth, shopController.postOrder);
-
 router.get('/checkout', isAuth, shopController.getCheckout);
+
+router.get('/checkout/success', isAuth, shopController.getCheckoutSuccess);
+
+router.get('/checkout/cancel', isAuth, shopController.getCheckout);
 
 module.exports = router;
