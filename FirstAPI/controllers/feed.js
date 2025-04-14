@@ -5,9 +5,18 @@ const path = require('path');
 
 
 exports.getPosts = (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 2;
+  let totalItems;
+
   Post.find()
+    .countDocuments()
+    .then(count => {
+      totalItems = count;
+      return Post.find().skip((currentPage - 1) * perPage).limit(perPage);
+    })
     .then(posts => {
-      res.status(200).json({ message: 'Posts created successfully!', posts: posts })
+      res.status(200).json({ message: 'Posts created successfully!', posts: posts, totalItems: totalItems })
     })
     .catch(err => {
       if (!err.statusCode) {
@@ -15,9 +24,12 @@ exports.getPosts = (req, res, next) => {
       }
       next(err);
     })
+
+
 }
 
 exports.createPost = (req, res, next) => {
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error('Validation failed, entered data is incorrect!');
