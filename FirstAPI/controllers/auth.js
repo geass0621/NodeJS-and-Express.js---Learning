@@ -8,7 +8,6 @@ exports.signup = async (req, res, next) => {
   if (!errors.isEmpty()) {
     const error = new Error('Validation failed!');
     error.statusCode = 422;
-    error.data = error.array();
     throw error;
   }
   const email = req.body.email;
@@ -24,7 +23,7 @@ exports.signup = async (req, res, next) => {
       name: name
     })
     await user.save();
-    res.status(201).json({ message: 'User created successfully!', userId: result._id });
+    res.status(201).json({ message: 'User created successfully!', userId: user._id });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
