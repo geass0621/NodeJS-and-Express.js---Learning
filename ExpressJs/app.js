@@ -3,7 +3,9 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const mongoose = require('mongoose');
 const multer = require('multer');
-const { v4: uuidv4 } = require('uuid')
+const { v4: uuidv4 } = require('uuid');
+const helmet = require('helmet');
+const compression = require('compression');
 
 
 const adminRoutes = require('./routes/admin');
@@ -17,7 +19,7 @@ const flash = require('connect-flash');
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
-const MONGODB_URI = 'mongodb+srv://dongcuong0621:NdLTGXBI5TpinOVK@cluster0.qhvix.mongodb.net/Shop?retryWrites=true&w=majority&appName=Cluster0';
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.qhvix.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority&appName=Cluster0`;
 
 
 const app = express();
@@ -46,6 +48,19 @@ const fileFilter = (req, file, cb) => {
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
+
+app.use(helmet.contentSecurityPolicy({
+  useDefaults: true,
+  directives: {
+    'default-src': ["'self'"],
+    'script-src': ["'self'", "'unsafe-inline'", 'js.stripe.com'],
+    'style-src': ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+    'frame-src': ["'self'", 'js.stripe.com'],
+    'font-src': ["'self'", 'fonts.googleapis.com', 'fonts.gstatic.com']
+  },
+}));
+
+app.use(compression());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'))

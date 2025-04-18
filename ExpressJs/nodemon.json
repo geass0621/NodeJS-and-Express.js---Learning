@@ -1,0 +1,8 @@
+{
+  "env": {
+    "MONGO_USER": "dongcuong0621",
+    "MONGO_PASSWORD": "NdLTGXBI5TpinOVK",
+    "MONGO_DEFAULT_DATABASE": "Shop",
+    "STRIPE_KEY": "sk_test_51OmEm0F6YsUjKW1R9OM7ECXY2rURzEkJLshZbVXv2ZXa3s6TGBx9IBnfDbIAPhVbW0s0DrhzgKSj6QGIlMicP6ih00O3laRg6V"
+  }
+}

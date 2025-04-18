@@ -15,7 +15,7 @@ const deleteProduct = (btn) => {
     })
     .then(data => {
       console.log(data);
-      productElement.parentNode.removeChild(productElement)
+      productElement.parentNode.removeChild(productElement);
     })
     .catch(err => {
       console.log(err);
