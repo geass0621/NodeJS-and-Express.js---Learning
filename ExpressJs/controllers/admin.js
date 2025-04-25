@@ -163,7 +163,7 @@ exports.deleteProduct = (req, res, next) => {
       }
       fileHelper.deleteFile(product.imageUrl);
 
-      return Product.deleteOne({ _id: prodId, userId: req.user._id })
+      return Product.deleteOne({ _id: prodId, userId: req.user._id });
     })
     .then(() => {
       console.log('Product deleted');
