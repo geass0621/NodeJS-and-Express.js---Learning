@@ -53,12 +53,14 @@ exports.login = async (req, res, next) => {
       userId: user._id.toString()
     }, 'superdupersecret', { expiresIn: '1h' });
 
-    res.status(200).json({ token: token, userId: user._id.toString() })
+    res.status(200).json({ token: token, userId: user._id.toString() });
+    return;
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
     next(err);
+    return err
   }
 }
 
@@ -70,12 +72,14 @@ exports.getStatus = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-    res.status(200).json({ message: 'Status found!', status: user.status })
+    res.status(200).json({ status: user.status });
+    return;
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
     next(err);
+    return err;
   }
 };
 
